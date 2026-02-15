@@ -377,7 +377,7 @@ button, input, select, textarea{ font:inherit; }
 .btn:disabled{ opacity: .45; cursor:not-allowed; }
 .btn.primary{
   border-color: rgba(255,183,3,.50);
-  background: linear-gradient(135deg, rgba(255,183,3,.55), rgba(76,201,240,.40), rgba(128,237,153,.35));
+  background: #ffe6a7; /* pastel yellow */
 }
 .btn.ghost{
   background: transparent;
