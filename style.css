@@ -79,9 +79,16 @@ button, input, select, textarea{ font:inherit; }
   -webkit-background-clip:text;
   background-clip:text;
   color: transparent;
+  text-decoration:none;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+}
+.brandTitle{ cursor:pointer; }
+.brandTitle:focus-visible{
+  outline: 2px solid rgba(38,83,255,.35);
+  outline-offset: 4px;
+  border-radius: 10px;
 }
 .brandSub{ color:var(--muted); font-size:12px; margin-top:4px; }
 .topbarRight{ margin-left:auto; display:flex; gap:10px; align-items:center; }
@@ -183,6 +190,14 @@ button, input, select, textarea{ font:inherit; }
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  text-decoration:none;
+  color: var(--ink);
+}
+.drawerTitle{ cursor:pointer; }
+.drawerTitle:focus-visible{
+  outline: 2px solid rgba(22,36,58,.22);
+  outline-offset: 4px;
+  border-radius: 10px;
 }
 .drawerKicker{
   font-size: 12px;
@@ -222,6 +237,7 @@ button, input, select, textarea{ font:inherit; }
 .badge.is-h{ background: #ffe6a7; } /* pastel yellow */
 .badge.is-p{ background: #cfefff; } /* pastel sky */
 .badge.is-d{ background: #d9f9e3; } /* pastel mint */
+.badge.is-c{ background: #ffd6d6; } /* pastel rose */
 .navText{ font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .ext{ margin-left:auto; color: var(--muted); font-size: 12px; }
 
