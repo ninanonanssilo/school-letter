@@ -1,14 +1,198 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
-</head>
-<body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
-</body>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>가정통신문 자동 생성기 | Edu Tools</title>
+    <meta name="description" content="교사용 가정통신문(안내문) 초안을 빠르게 자동 생성하는 Edu Tool" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="topbar">
+      <button id="menuBtn" class="iconBtn" type="button" aria-label="메뉴 열기" aria-haspopup="dialog" aria-controls="drawer">
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+      <div class="brand">
+        <div class="brandTitle">Edu Tools</div>
+        <div class="brandSub">업무 자동화 도우미</div>
+      </div>
+      <div class="topbarRight">
+        <a class="pillLink" href="#result">생성 결과</a>
+      </div>
+    </header>
+
+    <div id="backdrop" class="backdrop" hidden></div>
+    <aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-label="카테고리 메뉴" hidden>
+      <div class="drawerHeader">
+        <div class="drawerTitle">생성기</div>
+        <button id="closeBtn" class="iconBtn" type="button" aria-label="메뉴 닫기">
+          <span class="xIcon" aria-hidden="true"></span>
+        </button>
+      </div>
+      <nav class="drawerNav" aria-label="도구 목록">
+        <a class="navItem active" href="/">
+          <span class="badge">H</span>
+          <span class="navText">가정통신문 자동 생성기</span>
+        </a>
+        <a class="navItem" target="_blank" rel="noreferrer" href="https://money-report.pages.dev/">
+          <span class="badge">P</span>
+          <span class="navText">품의 기안 생성기</span>
+          <span class="ext" aria-hidden="true">↗</span>
+        </a>
+        <a class="navItem" target="_blank" rel="noreferrer" href="https://educate1.pages.dev/">
+          <span class="badge">D</span>
+          <span class="navText">학교 공문 자동 작성</span>
+          <span class="ext" aria-hidden="true">↗</span>
+        </a>
+      </nav>
+      <section class="drawerSection">
+        <h3 class="drawerSectionTitle">연동</h3>
+        <p class="muted">
+          같은 햄버거 카테고리에서 Edu Tools 서비스를 이동할 수 있게 구성했습니다.
+        </p>
+      </section>
+    </aside>
+
+    <main class="shell">
+      <section class="hero">
+        <h1 class="h1">가정통신문 자동 생성기</h1>
+        <p class="lead">
+          주제와 핵심 내용을 입력하면, 학교 가정통신문(안내문) 초안이 바로 생성됩니다.
+        </p>
+        <div class="warning" role="note">
+          개인정보(학생/학부모/교직원 실명, 연락처, 주민등록번호 등)는 입력하지 마세요. 민감 정보는 "홍길동(가명)"처럼 비식별 처리 후 작성하세요.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="cardHead">
+          <h2 class="h2">템플릿</h2>
+        </div>
+        <div class="grid2">
+          <label class="field">
+            <span class="label">템플릿 검색</span>
+            <input id="tplSearch" class="input" type="search" placeholder="예: 현장체험학습, 상담, 신청…" />
+          </label>
+          <label class="field">
+            <span class="label">빠른 템플릿</span>
+            <select id="tplQuick" class="select">
+              <option value="">선택 안 함</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <button id="applyTplBtn" class="btn" type="button">템플릿 적용</button>
+          <button id="resetBtn" class="btn ghost" type="button">입력 초기화</button>
+          <div class="spacer"></div>
+          <button id="fillExampleBtn" class="btn subtle" type="button">예시 입력</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="cardHead">
+          <h2 class="h2">가정통신문 입력</h2>
+        </div>
+        <form id="form" class="form" autocomplete="off">
+          <div class="grid2">
+            <label class="field">
+              <span class="label">제목</span>
+              <input id="title" class="input" name="title" type="text" placeholder="예: 2026학년도 1학기 학부모 상담주간 안내" required />
+            </label>
+            <label class="field">
+              <span class="label">시행일</span>
+              <input id="date" class="input" name="date" type="date" required />
+            </label>
+          </div>
+
+          <div class="grid3">
+            <label class="field">
+              <span class="label">학교명</span>
+              <input id="school" class="input" name="school" type="text" placeholder="예: 예시초등학교" />
+            </label>
+            <label class="field">
+              <span class="label">학년/반(선택)</span>
+              <input id="class" class="input" name="class" type="text" placeholder="예: 3학년 2반" />
+            </label>
+            <label class="field">
+              <span class="label">담임(선택)</span>
+              <input id="teacher" class="input" name="teacher" type="text" placeholder="예: OOO" />
+            </label>
+          </div>
+
+          <div class="grid2">
+            <label class="field">
+              <span class="label">문서 유형</span>
+              <select id="kind" class="select" name="kind">
+                <option value="안내">안내</option>
+                <option value="신청">신청</option>
+                <option value="변경">변경</option>
+                <option value="협조">협조</option>
+                <option value="공지">공지</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="label">문체</span>
+              <select id="tone" class="select" name="tone">
+                <option value="친절">친절</option>
+                <option value="공손" selected>공손</option>
+                <option value="간결">간결</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="field">
+            <span class="label">요약(한 줄)</span>
+            <input id="summary" class="input" name="summary" type="text" placeholder="예: 상담주간 운영 일정과 신청 방법을 안내드립니다." />
+          </label>
+
+          <label class="field">
+            <span class="label">핵심 내용(줄바꿈으로 항목 구분)</span>
+            <textarea id="points" class="textarea" name="points" rows="6" placeholder="예:\n상담 기간: 3/16(월)~3/20(금)\n장소: 각 교실\n신청: 가정통신문 회신 또는 학교 앱 설문\n문의: 담임교사"></textarea>
+          </label>
+
+          <div class="grid2">
+            <label class="field">
+              <span class="label">붙임(선택, 줄바꿈으로 구분)</span>
+              <textarea id="attachments" class="textarea" name="attachments" rows="4" placeholder="예:\n상담 신청서 1부\n개인정보 수집·이용 동의서 1부"></textarea>
+            </label>
+            <label class="field">
+              <span class="label">추가 안내(선택)</span>
+              <textarea id="extra" class="textarea" name="extra" rows="4" placeholder="예: 당일 취소/변경은 오전 10시까지 연락 부탁드립니다."></textarea>
+            </label>
+          </div>
+
+          <div class="row">
+            <button id="genBtn" class="btn primary" type="submit">가정통신문 생성</button>
+            <button id="clearBtn" class="btn ghost" type="button">결과 비우기</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="result" class="card">
+        <div class="cardHead">
+          <h2 class="h2">생성 결과</h2>
+        </div>
+        <div class="row">
+          <button id="copyBtn" class="btn" type="button" disabled>결과 복사</button>
+          <button id="downloadBtn" class="btn ghost" type="button" disabled>TXT 다운로드</button>
+          <div class="spacer"></div>
+          <div id="status" class="status" aria-live="polite"></div>
+        </div>
+        <pre id="out" class="output" tabindex="0" aria-label="생성된 가정통신문 결과"></pre>
+      </section>
+
+      <footer class="footer">
+        <div class="footerTitle">가정통신문 자동 생성기</div>
+        <div class="footerSub">Copyright © HONGSEOK LEE. All rights reserved.</div>
+      </footer>
+    </main>
+
+    <script defer src="/main.js"></script>
+  </body>
 </html>
