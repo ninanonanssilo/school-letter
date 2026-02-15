@@ -57,6 +57,7 @@ function formatAttachments(text) {
 function greetingForTone(tone) {
   if (tone === "간결") return "학부모님께";
   if (tone === "친절") return "안녕하십니까. 학부모님께 안내드립니다.";
+  if (tone === "구체적") return "안녕하십니까. 안내사항을 항목별로 자세히 안내드립니다.";
   return "안녕하십니까. 학부모님께 알려드립니다.";
 }
 
