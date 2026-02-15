@@ -29,6 +29,10 @@ function redactPII(value) {
   s = s.replace(/\b(0\d{1,2})[- ]?(\d{3,4})[- ]?(\d{4})\b/g, "$1-****-$3");
   // Emails.
   s = s.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "(email)");
+  // School names (best-effort). Prevent leaking real school names embedded in templates.
+  // Examples: "판교대장초등학교", "○○초", "OO초등학교" etc.
+  s = s.replace(/[가-힣A-Za-z0-9·\-]{2,}(초등학교|중학교|고등학교|유치원)/g, "○○$1");
+  s = s.replace(/[가-힣A-Za-z0-9·\-]{2,}(초등학교|중학교|고등학교|유치원)(장)?/g, (m, t, head) => `○○${t}${head || ""}`);
   return s;
 }
 

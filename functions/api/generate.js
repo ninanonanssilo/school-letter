@@ -86,7 +86,7 @@ export async function onRequestPost(context) {
   if (!template || typeof template !== "object") return err("Missing 'template' object.", 400);
   if (!values || typeof values !== "object") return err("Missing 'values' object.", 400);
 
-  const model = env.OPENAI_MODEL || "gpt-4o-mini";
+  const model = (typeof env.OPENAI_MODEL === "string" && env.OPENAI_MODEL.trim().replace(/^['\"]|['\"]$/g, "")) || "gpt-4o-mini";
   const result = await callOpenAI({ apiKey, model, template, values });
   if (!result.ok) {
     return err("OpenAI request failed.", 502, { upstream: result });
