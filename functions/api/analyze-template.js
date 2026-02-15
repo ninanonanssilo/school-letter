@@ -24,6 +24,17 @@ function extOf(name) {
   return i >= 0 ? n.slice(i + 1) : "";
 }
 
+function mimeFromName(name, fallback = "application/octet-stream") {
+  const ext = extOf(name);
+  if (ext === "pdf") return "application/pdf";
+  if (ext === "png") return "image/png";
+  if (ext === "jpg" || ext === "jpeg") return "image/jpeg";
+  if (ext === "webp") return "image/webp";
+  if (ext === "gif") return "image/gif";
+  if (ext === "txt") return "text/plain";
+  return fallback;
+}
+
 function decodeUtf8(u8) {
   return new TextDecoder("utf-8", { fatal: false }).decode(u8);
 }
@@ -131,10 +142,13 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText, debug = 
     }
   } else {
     const fileBytes = await file.arrayBuffer();
+    const mime = file.type || mimeFromName(file.name);
+    const b64 = base64FromArrayBuffer(fileBytes);
     content.push({
       type: "input_file",
       filename: file.name || "template",
-      file_data: base64FromArrayBuffer(fileBytes),
+      // Responses API expects a data URL for base64 bytes (see OpenAI docs for PDF file inputs).
+      file_data: `data:${mime};base64,${b64}`,
     });
   }
 
