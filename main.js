@@ -524,7 +524,11 @@ async function analyzeTemplateFile(file) {
   const resp = await fetch("/api/analyze-template", { method: "POST", body: fd });
   const data = await resp.json().catch(() => null);
   if (!resp.ok) {
-    const msg = data?.error || `양식 분석 실패 (HTTP ${resp.status})`;
+    let msg = data?.error || `양식 분석 실패 (HTTP ${resp.status})`;
+    // Keep UI copy simple; avoid leaking internal env var names.
+    if (String(msg).includes("OPENAI_API_KEY")) {
+      msg = "서버 설정이 필요합니다. 관리자에게 문의하세요.";
+    }
     throw new Error(msg);
   }
   if (!data?.template) throw new Error("양식 분석 결과가 비어있습니다.");
@@ -592,13 +596,22 @@ function wireUI() {
       setStatus("양식 기반 생성 중…", "info");
       generateWithTemplate(tpl, v)
         .then((text) => {
-          if (!text.trim()) throw new Error("생성 결과가 비어있습니다.");
+          if (typeof text !== "string" || !text.trim()) {
+            throw new Error("AI 생성 결과가 비어있습니다.");
+          }
           setOutput(text);
           setStatus("생성 완료(양식 기반)", "ok");
           location.hash = "#result";
         })
         .catch((err) => {
-          setStatus(String(err?.message || err || "생성 실패"), "warn");
+          // Fail soft: fall back to local generator so the user still gets something usable.
+          const fallback = generateLetter(v);
+          setOutput(fallback);
+          setStatus(
+            `양식 기반 생성 실패 → 로컬 생성으로 대체했습니다. (${String(err?.message || err || "오류")})`,
+            "warn"
+          );
+          location.hash = "#result";
         });
       return;
     }
