@@ -57,6 +57,30 @@ body{
 a{ color:inherit; }
 button, input, select, textarea{ font:inherit; }
 
+/* Collapsible usage guide */
+details.help{
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.55);
+  border-radius: var(--r16);
+  padding: 10px 12px;
+}
+details.help summary{
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+details.help summary::-webkit-details-marker{ display:none; }
+details.help summary::after{
+  content:"▾";
+  color: var(--muted);
+  font-weight: 900;
+  transition: transform 140ms ease;
+}
+details.help[open] summary::after{ transform: rotate(180deg); }
+
 .toast{
   position: fixed;
   left: 50%;
