@@ -1,7 +1,15 @@
 const $ = (sel) => document.querySelector(sel);
+const STORAGE_KEY = "schoolletter:template:v1";
 
 function setStatus(msg, kind = "info") {
   const el = $("#status");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.dataset.kind = kind;
+}
+
+function setTplStatus(msg, kind = "info") {
+  const el = $("#tplStatus");
   if (!el) return;
   el.textContent = msg || "";
   el.dataset.kind = kind;
@@ -492,6 +500,63 @@ function resetInputs(keepDate = true) {
   setStatus("입력을 초기화했습니다.");
 }
 
+function setTemplateOutput(obj) {
+  const pre = $("#tplOut");
+  if (!pre) return;
+  if (!obj) {
+    pre.hidden = true;
+    pre.textContent = "";
+    return;
+  }
+  pre.hidden = false;
+  pre.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+}
+
+function loadSavedTemplate() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function saveTemplate(tpl) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tpl));
+}
+
+function clearTemplate() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+async function analyzeTemplateFile(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  const resp = await fetch("/api/analyze-template", { method: "POST", body: fd });
+  const data = await resp.json().catch(() => null);
+  if (!resp.ok) {
+    const msg = data?.error || `양식 분석 실패 (HTTP ${resp.status})`;
+    throw new Error(msg);
+  }
+  if (!data?.template) throw new Error("양식 분석 결과가 비어있습니다.");
+  return data.template;
+}
+
+async function generateWithTemplate(template, values) {
+  const resp = await fetch("/api/generate", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ template, values }),
+  });
+  const data = await resp.json().catch(() => null);
+  if (!resp.ok) {
+    const msg = data?.error || `생성 실패 (HTTP ${resp.status})`;
+    throw new Error(msg);
+  }
+  return data?.text || "";
+}
+
 function wireUI() {
   $("#menuBtn").addEventListener("click", () => {
     const isOpen = !$("#drawer").hidden;
@@ -528,13 +593,68 @@ function wireUI() {
   $("#form").addEventListener("submit", (e) => {
     e.preventDefault();
     const v = getFormValues();
+    const aiMode = ($("#aiMode")?.value || "off").trim();
+    const tpl = loadSavedTemplate();
+
+    if (aiMode === "on") {
+      if (!tpl) {
+        setStatus("양식 기반 생성을 사용하려면 먼저 '양식 분석'을 진행하세요.", "warn");
+        return;
+      }
+      setStatus("양식 기반 생성 중…", "info");
+      generateWithTemplate(tpl, v)
+        .then((text) => {
+          if (!text.trim()) throw new Error("생성 결과가 비어있습니다.");
+          setOutput(text);
+          setStatus("생성 완료(양식 기반)", "ok");
+          location.hash = "#result";
+        })
+        .catch((err) => {
+          setStatus(String(err?.message || err || "생성 실패"), "warn");
+        });
+      return;
+    }
+
     const doc = generateLetter(v);
     setOutput(doc);
     setStatus("생성 완료", "ok");
     location.hash = "#result";
+  });
+
+  $("#analyzeTplBtn").addEventListener("click", () => {
+    const file = $("#tplFile")?.files?.[0];
+    if (!file) {
+      setTplStatus("파일을 선택하세요.", "warn");
+      return;
+    }
+    setTplStatus("양식 분석 중… (서버에 OPENAI_API_KEY가 설정되어 있어야 합니다)", "info");
+    analyzeTemplateFile(file)
+      .then((tpl) => {
+        saveTemplate(tpl);
+        setTemplateOutput(tpl);
+        setTplStatus("양식 분석 완료. 이제 '양식 기반 생성'을 사용할 수 있어요.", "ok");
+      })
+      .catch((err) => {
+        setTplStatus(String(err?.message || err || "양식 분석 실패"), "warn");
+      });
+  });
+
+  $("#clearTplBtn").addEventListener("click", () => {
+    clearTemplate();
+    setTemplateOutput(null);
+    setTplStatus("저장된 양식을 제거했습니다.", "ok");
   });
 }
 
 populateTemplates();
 setDefaultDate();
 wireUI();
+
+// Restore template preview on load if present
+(() => {
+  const tpl = loadSavedTemplate();
+  if (tpl) {
+    setTemplateOutput(tpl);
+    setTplStatus("저장된 양식이 있습니다. '양식 기반 생성'을 켜서 사용할 수 있어요.", "info");
+  }
+})();

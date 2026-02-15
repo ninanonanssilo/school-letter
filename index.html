@@ -101,6 +101,34 @@
 
       <section class="card">
         <div class="cardHead">
+          <h2 class="h2">학교 양식 업로드 (선택)</h2>
+        </div>
+        <div class="form">
+          <div class="grid2">
+            <label class="field">
+              <span class="label">양식 파일(PDF/이미지)</span>
+              <input id="tplFile" class="input" type="file" accept=".pdf,image/*" />
+            </label>
+            <label class="field">
+              <span class="label">양식 기반 생성</span>
+              <select id="aiMode" class="select">
+                <option value="off" selected>사용 안 함(로컬 생성)</option>
+                <option value="on">사용(양식 기반 생성)</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <button id="analyzeTplBtn" class="btn" type="button">양식 분석</button>
+            <button id="clearTplBtn" class="btn ghost" type="button">양식 제거</button>
+            <div class="spacer"></div>
+            <div id="tplStatus" class="status" aria-live="polite"></div>
+          </div>
+          <pre id="tplOut" class="output" hidden></pre>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="cardHead">
           <h2 class="h2">가정통신문 입력</h2>
         </div>
         <form id="form" class="form" autocomplete="off">
