@@ -173,72 +173,71 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText, debug = 
     text: {
       format: {
         type: "json_schema",
-        json_schema: {
-          name: "school_letter_template",
-          schema: {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-              doc_type: { type: "string" },
-              language: { type: "string" },
-              has_letterhead: { type: "boolean" },
-              has_signature_block: { type: "boolean" },
-              required_fields: {
-                type: "array",
-                items: { type: "string" },
-              },
-              sections: {
-                type: "array",
-                items: {
-                  type: "object",
-                  additionalProperties: false,
-                  properties: {
-                    name: { type: "string" },
-                    purpose: { type: "string" },
-                    fixed_phrases: { type: "array", items: { type: "string" } },
-                    variable_slots: { type: "array", items: { type: "string" } },
-                  },
-                  required: ["name", "purpose", "fixed_phrases", "variable_slots"],
-                },
-              },
-              style_guide: {
+        name: "school_letter_template",
+        strict: true,
+        schema: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            doc_type: { type: "string" },
+            language: { type: "string" },
+            has_letterhead: { type: "boolean" },
+            has_signature_block: { type: "boolean" },
+            required_fields: {
+              type: "array",
+              items: { type: "string" },
+            },
+            sections: {
+              type: "array",
+              items: {
                 type: "object",
                 additionalProperties: false,
                 properties: {
-                  tone: { type: "string" },
-                  honorifics: { type: "string" },
-                  formatting_notes: { type: "array", items: { type: "string" } },
+                  name: { type: "string" },
+                  purpose: { type: "string" },
+                  fixed_phrases: { type: "array", items: { type: "string" } },
+                  variable_slots: { type: "array", items: { type: "string" } },
                 },
-                required: ["tone", "honorifics", "formatting_notes"],
-              },
-              rendering_rules: {
-                type: "object",
-                additionalProperties: false,
-                properties: {
-                  date_format: { type: "string" },
-                  bullet_style: { type: "string" },
-                  attachments_style: { type: "string" },
-                },
-                required: ["date_format", "bullet_style", "attachments_style"],
-              },
-              template_skeleton: {
-                type: "string",
-                description:
-                  "A plain-text skeleton with placeholders like {{title}}, {{date}}, etc. No PII.",
+                required: ["name", "purpose", "fixed_phrases", "variable_slots"],
               },
             },
-            required: [
-              "doc_type",
-              "language",
-              "has_letterhead",
-              "has_signature_block",
-              "required_fields",
-              "sections",
-              "style_guide",
-              "rendering_rules",
-              "template_skeleton",
-            ],
+            style_guide: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                tone: { type: "string" },
+                honorifics: { type: "string" },
+                formatting_notes: { type: "array", items: { type: "string" } },
+              },
+              required: ["tone", "honorifics", "formatting_notes"],
+            },
+            rendering_rules: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                date_format: { type: "string" },
+                bullet_style: { type: "string" },
+                attachments_style: { type: "string" },
+              },
+              required: ["date_format", "bullet_style", "attachments_style"],
+            },
+            template_skeleton: {
+              type: "string",
+              description:
+                "A plain-text skeleton with placeholders like {{title}}, {{date}}, etc. No PII.",
+            },
           },
+          required: [
+            "doc_type",
+            "language",
+            "has_letterhead",
+            "has_signature_block",
+            "required_fields",
+            "sections",
+            "style_guide",
+            "rendering_rules",
+            "template_skeleton",
+          ],
         },
       },
     },
