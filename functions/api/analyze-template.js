@@ -253,11 +253,10 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText, debug = 
       if (Array.isArray(c)) {
         for (const item of c) {
           if (item?.type === "input_file") item.file_data = "(omitted)";
+          if (item?.type === "input_image") item.image_url = "(omitted)";
         }
       }
-    } catch {
-      // ignore
-    }
+    } catch {}
     return {
       ok: true,
       parsed: {
@@ -265,6 +264,11 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText, debug = 
         has_text_format: Boolean(safeBody?.text?.format),
         top_level_keys: Object.keys(safeBody),
         text_format_type: safeBody?.text?.format?.type || null,
+        text_format_name: safeBody?.text?.format?.name || null,
+        text_format_keys: safeBody?.text?.format ? Object.keys(safeBody.text.format) : [],
+        input_content_types: Array.isArray(safeBody?.input?.[0]?.content)
+          ? safeBody.input[0].content.map((x) => x?.type).filter(Boolean)
+          : [],
         model: safeBody?.model || null,
       },
       raw: safeBody,
