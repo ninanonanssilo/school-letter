@@ -15,7 +15,7 @@ async function pingOpenAI(apiKey, model) {
     body: JSON.stringify({
       model,
       input: [{ role: "user", content: [{ type: "input_text", text: "ping" }] }],
-      max_output_tokens: 8,
+      max_output_tokens: 16,
     }),
   });
 
@@ -75,4 +75,3 @@ export async function onRequestGet(context) {
     upstream: { ok: true, status: upstream.status },
   });
 }
-
