@@ -147,73 +147,76 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText }) {
       },
     ],
     // Structured output (JSON Schema)
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: "school_letter_template",
-        schema: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            doc_type: { type: "string" },
-            language: { type: "string" },
-            has_letterhead: { type: "boolean" },
-            has_signature_block: { type: "boolean" },
-            required_fields: {
-              type: "array",
-              items: { type: "string" },
-            },
-            sections: {
-              type: "array",
-              items: {
+    // NOTE: In the Responses API, response_format moved under text.format.
+    text: {
+      format: {
+        type: "json_schema",
+        json_schema: {
+          name: "school_letter_template",
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              doc_type: { type: "string" },
+              language: { type: "string" },
+              has_letterhead: { type: "boolean" },
+              has_signature_block: { type: "boolean" },
+              required_fields: {
+                type: "array",
+                items: { type: "string" },
+              },
+              sections: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    name: { type: "string" },
+                    purpose: { type: "string" },
+                    fixed_phrases: { type: "array", items: { type: "string" } },
+                    variable_slots: { type: "array", items: { type: "string" } },
+                  },
+                  required: ["name", "purpose", "fixed_phrases", "variable_slots"],
+                },
+              },
+              style_guide: {
                 type: "object",
                 additionalProperties: false,
                 properties: {
-                  name: { type: "string" },
-                  purpose: { type: "string" },
-                  fixed_phrases: { type: "array", items: { type: "string" } },
-                  variable_slots: { type: "array", items: { type: "string" } },
+                  tone: { type: "string" },
+                  honorifics: { type: "string" },
+                  formatting_notes: { type: "array", items: { type: "string" } },
                 },
-                required: ["name", "purpose", "fixed_phrases", "variable_slots"],
+                required: ["tone", "honorifics", "formatting_notes"],
+              },
+              rendering_rules: {
+                type: "object",
+                additionalProperties: false,
+                properties: {
+                  date_format: { type: "string" },
+                  bullet_style: { type: "string" },
+                  attachments_style: { type: "string" },
+                },
+                required: ["date_format", "bullet_style", "attachments_style"],
+              },
+              template_skeleton: {
+                type: "string",
+                description:
+                  "A plain-text skeleton with placeholders like {{title}}, {{date}}, etc. No PII.",
               },
             },
-            style_guide: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                tone: { type: "string" },
-                honorifics: { type: "string" },
-                formatting_notes: { type: "array", items: { type: "string" } },
-              },
-              required: ["tone", "honorifics", "formatting_notes"],
-            },
-            rendering_rules: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                date_format: { type: "string" },
-                bullet_style: { type: "string" },
-                attachments_style: { type: "string" },
-              },
-              required: ["date_format", "bullet_style", "attachments_style"],
-            },
-            template_skeleton: {
-              type: "string",
-              description:
-                "A plain-text skeleton with placeholders like {{title}}, {{date}}, etc. No PII.",
-            },
+            required: [
+              "doc_type",
+              "language",
+              "has_letterhead",
+              "has_signature_block",
+              "required_fields",
+              "sections",
+              "style_guide",
+              "rendering_rules",
+              "template_skeleton",
+            ],
           },
-          required: [
-            "doc_type",
-            "language",
-            "has_letterhead",
-            "has_signature_block",
-            "required_fields",
-            "sections",
-            "style_guide",
-            "rendering_rules",
-            "template_skeleton",
-          ],
         },
       },
     },
@@ -240,25 +243,26 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText }) {
     return { ok: false, status: resp.status, data };
   }
 
-  // Responses API: structured output is usually in `output_text` for plain text,
-  // but for json_schema we should read `output[...].content[...].text` or `output_parsed`.
-  const parsed =
-    data.output_parsed ||
-    (Array.isArray(data.output)
+  // Try common locations first.
+  const outText =
+    (typeof data?.output_text === "string" && data.output_text) ||
+    (Array.isArray(data?.output)
       ? data.output
           .flatMap((o) => o.content || [])
           .find((c) => c.type === "output_text" || c.type === "output_json")?.text
       : null);
 
-  if (typeof parsed === "string") {
+  if (typeof outText === "string" && outText.trim()) {
     try {
-      return { ok: true, parsed: JSON.parse(parsed), raw: data };
+      return { ok: true, parsed: JSON.parse(outText), raw: data };
     } catch {
-      return { ok: true, parsed, raw: data };
+      // Fallback: return raw text if parsing fails.
+      return { ok: true, parsed: outText, raw: data };
     }
   }
 
-  return { ok: true, parsed: data.output_parsed || null, raw: data };
+  if (data?.output_parsed) return { ok: true, parsed: data.output_parsed, raw: data };
+  return { ok: true, parsed: null, raw: data };
 }
 
 export async function onRequestPost(context) {
