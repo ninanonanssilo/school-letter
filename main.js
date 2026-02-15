@@ -500,18 +500,6 @@ function resetInputs(keepDate = true) {
   setStatus("입력을 초기화했습니다.");
 }
 
-function setTemplateOutput(obj) {
-  const pre = $("#tplOut");
-  if (!pre) return;
-  if (!obj) {
-    pre.hidden = true;
-    pre.textContent = "";
-    return;
-  }
-  pre.hidden = false;
-  pre.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
-}
-
 function loadSavedTemplate() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -627,11 +615,10 @@ function wireUI() {
       setTplStatus("파일을 선택하세요.", "warn");
       return;
     }
-    setTplStatus("양식 분석 중… (서버에 OPENAI_API_KEY가 설정되어 있어야 합니다)", "info");
+    setTplStatus("양식 분석 중...", "info");
     analyzeTemplateFile(file)
       .then((tpl) => {
         saveTemplate(tpl);
-        setTemplateOutput(tpl);
         setTplStatus("양식 분석 완료. 이제 '양식 기반 생성'을 사용할 수 있어요.", "ok");
       })
       .catch((err) => {
@@ -641,7 +628,6 @@ function wireUI() {
 
   $("#clearTplBtn").addEventListener("click", () => {
     clearTemplate();
-    setTemplateOutput(null);
     setTplStatus("저장된 양식을 제거했습니다.", "ok");
   });
 }
@@ -654,7 +640,6 @@ wireUI();
 (() => {
   const tpl = loadSavedTemplate();
   if (tpl) {
-    setTemplateOutput(tpl);
     setTplStatus("저장된 양식이 있습니다. '양식 기반 생성'을 켜서 사용할 수 있어요.", "info");
   }
 })();

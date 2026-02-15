@@ -372,6 +372,7 @@ export async function onRequestPost(context) {
     "Analyze the provided school newsletter (가정통신문) template and extract its structure.\n" +
     "Return a JSON object matching the provided schema. Be conservative: include only what is clearly present.\n" +
     "Do not include any real names, phone numbers, addresses, IDs, or other PII in fixed phrases. Replace with placeholders.\n" +
+    "In `required_fields`, list field NAMES only (e.g., '부서', '연락처', '팩스', '주소'), not actual values.\n" +
     "Make `template_skeleton` a plain text outline that can be filled, using {{placeholders}}.\n";
 
   const debug = url.searchParams.get("debug") === "1";

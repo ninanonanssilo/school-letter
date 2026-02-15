@@ -8,6 +8,14 @@ function err(message, status = 400, extra = {}) {
   return json({ ok: false, error: message, ...extra }, { status });
 }
 
+function extractOutputText(data) {
+  if (typeof data?.output_text === "string" && data.output_text.trim()) return data.output_text;
+  if (!Array.isArray(data?.output)) return "";
+  const content = data.output.flatMap((o) => o?.content || []);
+  const first = content.find((c) => (c?.type === "output_text" || c?.type === "output_json") && typeof c?.text === "string");
+  return first?.text || "";
+}
+
 async function callOpenAI({ apiKey, model, template, values }) {
   const system =
     "You are a Korean elementary school teacher assistant.\n" +
@@ -32,6 +40,7 @@ async function callOpenAI({ apiKey, model, template, values }) {
       { role: "system", content: [{ type: "input_text", text: system }] },
       { role: "user", content: [{ type: "input_text", text: user }] },
     ],
+    max_output_tokens: 900,
   };
 
   const resp = await fetch("https://api.openai.com/v1/responses", {
@@ -48,7 +57,7 @@ async function callOpenAI({ apiKey, model, template, values }) {
     return { ok: false, status: resp.status, data };
   }
 
-  const text = data?.output_text || "";
+  const text = extractOutputText(data);
   return { ok: true, text };
 }
 
@@ -81,6 +90,9 @@ export async function onRequestPost(context) {
     return err("OpenAI request failed.", 502, { upstream: result });
   }
 
+  if (!result.text || !result.text.trim()) {
+    return err("OpenAI returned empty text.", 502, { upstream: { ok: true, status: 200 } });
+  }
+
   return json({ ok: true, text: result.text }, { status: 200 });
 }
-
