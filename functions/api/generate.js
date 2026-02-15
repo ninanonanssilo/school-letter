@@ -110,5 +110,15 @@ export async function onRequestPost(context) {
     });
   }
 
-  return json({ ok: true, text: result.text }, { status: 200 });
+  let text = String(result.text || "");
+  // Remove common markdown artifacts (e.g. **bold**) that sometimes leak from models.
+  text = text.replace(/\*\*(.*?)\*\*/g, "$1");
+  // Remove stray markdown headings/bullets when they appear alone.
+  text = text.replace(/^\s{0,3}#+\s+/gm, "");
+  // Remove fenced code blocks while keeping inner text.
+  text = text.replace(/```[a-zA-Z0-9_-]*\n([\s\S]*?)```/g, "$1");
+  // Normalize excessive blank lines.
+  text = text.replace(/\n{3,}/g, "\n\n");
+
+  return json({ ok: true, text }, { status: 200 });
 }
