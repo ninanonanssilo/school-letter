@@ -119,7 +119,7 @@ async function extractHwpxText(file) {
   return joined;
 }
 
-async function callOpenAI({ apiKey, model, prompt, file, extractedText }) {
+async function callOpenAI({ apiKey, model, prompt, file, extractedText, debug = false }) {
   const content = [{ type: "input_text", text: prompt }];
   if (extractedText) {
     // Keep within reasonable limits; raw templates can be huge.
@@ -222,6 +222,34 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText }) {
     },
   };
 
+  // Debug helper: allows verifying request shape without sending user content upstream.
+  // Use from POST /api/analyze-template?debug=1 with a small file.
+  if (debug === true) {
+    const safeBody = JSON.parse(JSON.stringify(body));
+    // Avoid echoing base64 back.
+    try {
+      const c = safeBody?.input?.[0]?.content;
+      if (Array.isArray(c)) {
+        for (const item of c) {
+          if (item?.type === "input_file") item.file_data = "(omitted)";
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return {
+      ok: true,
+      parsed: {
+        has_response_format: Object.prototype.hasOwnProperty.call(safeBody, "response_format"),
+        has_text_format: Boolean(safeBody?.text?.format),
+        top_level_keys: Object.keys(safeBody),
+        text_format_type: safeBody?.text?.format?.type || null,
+        model: safeBody?.model || null,
+      },
+      raw: safeBody,
+    };
+  }
+
   const resp = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
@@ -267,6 +295,7 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText }) {
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  const url = new URL(request.url);
 
   const apiKey = env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -320,7 +349,8 @@ export async function onRequestPost(context) {
     "Do not include any real names, phone numbers, addresses, IDs, or other PII in fixed phrases. Replace with placeholders.\n" +
     "Make `template_skeleton` a plain text outline that can be filled, using {{placeholders}}.\n";
 
-  const result = await callOpenAI({ apiKey, model, prompt, file, extractedText });
+  const debug = url.searchParams.get("debug") === "1";
+  const result = await callOpenAI({ apiKey, model, prompt, file, extractedText, debug });
   if (!result.ok) {
     return err("OpenAI request failed.", 502, { upstream: result });
   }
