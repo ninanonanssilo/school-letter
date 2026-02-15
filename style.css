@@ -37,17 +37,7 @@
   --space-5: 24px;
 }
 
-html[data-theme="dark"]{ color-scheme: dark; }
-html[data-theme="dark"]:root{
-  --bg0:#0b1220;
-  --bg1:#0b1220;
-  --paper: rgba(255,255,255,0.06);
-  --card: rgba(255,255,255,0.06);
-  --ink: rgba(255,255,255,0.92);
-  --muted: rgba(255,255,255,0.70);
-  --line: rgba(255,255,255,0.14);
-  --shadow: 0 22px 65px rgba(0,0,0,0.45);
-}
+/* 다크모드 제거: 밝은 모드 고정 */
 
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
@@ -150,8 +140,7 @@ details.help[open] summary::after{ transform: rotate(180deg); }
 }
 .brandSub{ color:var(--muted); font-size:12px; margin-top:4px; }
 .topbarRight{ margin-left:auto; display:flex; gap:10px; align-items:center; }
-html[data-theme="dark"] .topbar{ background: rgba(12, 18, 32, 0.72); }
-html[data-theme="dark"] .pillLink{ background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.14); color: rgba(255,255,255,0.92); }
+/* 다크모드 제거: 밝은 모드 고정 */
 
 .topbar::after{
   content:"";
