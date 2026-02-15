@@ -8,6 +8,42 @@ function err(message, status = 400, extra = {}) {
   return json({ ok: false, error: message, ...extra }, { status });
 }
 
+function sanitizeModel(raw, fallback) {
+  if (typeof raw !== "string") return fallback;
+  let v = raw.trim();
+  while (
+    v.length >= 2 &&
+    ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")))
+  ) {
+    v = v.slice(1, -1).trim();
+  }
+  return v || fallback;
+}
+
+function redactPII(value) {
+  // Best-effort redaction. We still ask users not to upload PII.
+  let s = String(value ?? "");
+  // Korean resident registration number patterns.
+  s = s.replace(/\b(\d{6})[- ]?(\d{7})\b/g, "$1-*******");
+  // Phone numbers (loose): 0xx-xxxx-xxxx / 01x-xxx(x)-xxxx.
+  s = s.replace(/\b(0\d{1,2})[- ]?(\d{3,4})[- ]?(\d{4})\b/g, "$1-****-$3");
+  // Emails.
+  s = s.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "(email)");
+  return s;
+}
+
+function deepRedact(obj) {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === "string") return redactPII(obj);
+  if (Array.isArray(obj)) return obj.map(deepRedact);
+  if (typeof obj === "object") {
+    const out = {};
+    for (const [k, v] of Object.entries(obj)) out[k] = deepRedact(v);
+    return out;
+  }
+  return obj;
+}
+
 function base64FromArrayBuffer(buf) {
   const bytes = new Uint8Array(buf);
   let bin = "";
@@ -302,8 +338,27 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText, debug = 
     (Array.isArray(data?.output)
       ? data.output
           .flatMap((o) => o.content || [])
-          .find((c) => c.type === "output_text" || c.type === "output_json")?.text
+          .find((c) => c.type === "output_text")?.text
       : null);
+
+  // Responses API may return output_json as { json: {...} } (preferred) or a text string.
+  const outJson = Array.isArray(data?.output)
+    ? data.output
+        .flatMap((o) => o.content || [])
+        .find((c) => c.type === "output_json")
+    : null;
+
+  if (outJson && typeof outJson.json === "object" && outJson.json) {
+    return { ok: true, parsed: outJson.json, raw: data };
+  }
+
+  if (typeof outJson?.text === "string" && outJson.text.trim()) {
+    try {
+      return { ok: true, parsed: JSON.parse(outJson.text), raw: data };
+    } catch {
+      return { ok: true, parsed: outJson.text, raw: data };
+    }
+  }
 
   if (typeof outText === "string" && outText.trim()) {
     try {
@@ -348,7 +403,7 @@ export async function onRequestPost(context) {
     });
   }
 
-  const model = env.OPENAI_MODEL || "gpt-4o-mini";
+  const model = sanitizeModel(env.OPENAI_MODEL, "gpt-4o-mini");
   const ext = extOf(file.name);
   let extractedText = null;
   if (ext === "hwp") {
@@ -381,5 +436,8 @@ export async function onRequestPost(context) {
     return err("OpenAI request failed.", 502, { upstream: result });
   }
 
-  return json({ ok: true, template: result.parsed }, { status: 200 });
+  // Best-effort PII redaction on the extracted template structure.
+  const safeTemplate = deepRedact(result.parsed);
+
+  return json({ ok: true, template: safeTemplate }, { status: 200 });
 }
