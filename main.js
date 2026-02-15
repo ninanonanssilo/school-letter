@@ -1,5 +1,19 @@
 const $ = (sel) => document.querySelector(sel);
 const STORAGE_KEY = "schoolletter:template:v1";
+const DRAFT_KEY = "schoolletter:draft:v1";
+
+function toast(msg, { ms = 1800 } = {}) {
+  const el = document.getElementById("toast");
+  if (!el) return;
+  const m = String(msg || "").trim();
+  if (!m) return;
+  el.textContent = m;
+  el.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => {
+    el.classList.remove("show");
+  }, Math.max(700, Number(ms) || 1800));
+}
 
 function setStatus(msg, kind = "info") {
   const el = $("#status");
@@ -461,6 +475,7 @@ function downloadOutput() {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+  toast("TXT 다운로드를 시작했습니다.");
   setStatus("TXT 다운로드를 시작했습니다.", "ok");
 }
 
@@ -481,6 +496,7 @@ function fillExample() {
   ].join("\n");
   $("#attachments").value = "상담 신청서 1부(선택)";
   $("#extra").value = "원활한 운영을 위해 신청 시간 준수에 협조 부탁드립니다.";
+  toast("예시 입력을 채웠습니다.");
   setStatus("예시 입력을 채웠습니다.");
 }
 
@@ -498,6 +514,7 @@ function resetInputs(keepDate = true) {
   $("#extra").value = "";
   $("#tplQuick").value = "";
   $("#tplSearch").value = "";
+  clearDraft();
   setStatus("입력을 초기화했습니다.");
 }
 
@@ -517,6 +534,59 @@ function saveTemplate(tpl) {
 
 function clearTemplate() {
   localStorage.removeItem(STORAGE_KEY);
+}
+
+function getDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function saveDraft(values) {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(values || {}));
+  } catch {
+    // ignore
+  }
+}
+
+function clearDraft() {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+function restoreDraft() {
+  const d = getDraft();
+  if (!d) return false;
+
+  const setIfEmpty = (id, v) => {
+    const el = $(id);
+    if (!el) return;
+    const cur = String(el.value || "").trim();
+    const next = String(v || "");
+    if (!cur && next) el.value = next;
+  };
+
+  setIfEmpty("#title", d.title);
+  setIfEmpty("#date", d.date);
+  setIfEmpty("#school", d.school);
+  setIfEmpty("#class", d.class);
+  setIfEmpty("#teacher", d.teacher);
+  setIfEmpty("#kind", d.kind);
+  setIfEmpty("#tone", d.tone);
+  setIfEmpty("#summary", d.summary);
+  setIfEmpty("#points", d.points);
+  setIfEmpty("#attachments", d.attachments);
+  setIfEmpty("#extra", d.extra);
+
+  return true;
 }
 
 async function analyzeTemplateFile(file) {
@@ -572,20 +642,29 @@ function wireUI() {
   });
 
   $("#resetBtn").addEventListener("click", () => resetInputs(true));
-  $("#fillExampleBtn").addEventListener("click", fillExample);
+  $("#fillExampleBtn").addEventListener("click", () => {
+    fillExample();
+    saveDraft(getFormValues());
+  });
   $("#clearBtn").addEventListener("click", () => {
     setOutput("");
     setStatus("결과를 비웠습니다.");
   });
 
   $("#copyBtn").addEventListener("click", () => {
-    copyOutput().catch(() => setStatus("복사에 실패했습니다. 브라우저 권한을 확인하세요.", "warn"));
+    copyOutput()
+      .then(() => toast("클립보드에 복사했습니다."))
+      .catch(() => {
+        toast("복사에 실패했습니다. 브라우저 권한을 확인하세요.", { ms: 2400 });
+        setStatus("복사에 실패했습니다. 브라우저 권한을 확인하세요.", "warn");
+      });
   });
   $("#downloadBtn").addEventListener("click", downloadOutput);
 
   $("#form").addEventListener("submit", (e) => {
     e.preventDefault();
     const v = getFormValues();
+    saveDraft(v);
     const aiMode = ($("#aiMode")?.value || "off").trim();
     const tpl = loadSavedTemplate();
 
@@ -601,6 +680,7 @@ function wireUI() {
             throw new Error("AI 생성 결과가 비어있습니다.");
           }
           setOutput(text);
+          toast("생성 완료(양식 기반)");
           setStatus("생성 완료(양식 기반)", "ok");
           location.hash = "#result";
         })
@@ -619,6 +699,7 @@ function wireUI() {
 
     const doc = generateLetter(v);
     setOutput(doc);
+    toast("생성 완료");
     setStatus("생성 완료", "ok");
     location.hash = "#result";
   });
@@ -655,5 +736,11 @@ wireUI();
   const tpl = loadSavedTemplate();
   if (tpl) {
     setTplStatus("저장된 양식이 있습니다. '양식 기반 생성'을 켜서 사용할 수 있어요.", "info");
+  }
+
+  const restored = restoreDraft();
+  if (restored) {
+    setStatus("임시 저장된 입력을 불러왔습니다.", "info");
+    toast("임시 저장된 입력을 불러왔습니다.");
   }
 })();

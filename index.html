@@ -10,6 +10,7 @@
     <link href="/style.css" rel="stylesheet" />
   </head>
   <body>
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
     <header class="topbar">
       <button id="menuBtn" class="iconBtn" type="button" aria-label="메뉴 열기" aria-haspopup="dialog" aria-controls="drawer">
         <span class="hamburger" aria-hidden="true"></span>
@@ -240,7 +241,7 @@
         <div class="cardHead">
           <h2 class="h2">생성 결과</h2>
         </div>
-        <div class="row">
+        <div class="row resultActions">
           <button id="copyBtn" class="btn" type="button" disabled>결과 복사</button>
           <button id="downloadBtn" class="btn ghost" type="button" disabled>TXT 다운로드</button>
           <div class="spacer"></div>

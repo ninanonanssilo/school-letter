@@ -57,6 +57,28 @@ body{
 a{ color:inherit; }
 button, input, select, textarea{ font:inherit; }
 
+.toast{
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 9999;
+  max-width: min(92vw, 560px);
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+.toast.show{
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
 .topbar{
   position:sticky;
   top:0;
@@ -424,6 +446,17 @@ button, input, select, textarea{ font:inherit; }
   padding: 16px 18px 18px 18px;
   flex-wrap:wrap;
 }
+
+/* 결과 영역의 복사/다운로드 버튼을 스크롤 중에도 보이게 */
+.resultActions{
+  position: sticky;
+  top: 66px; /* topbar 높이 고려 */
+  z-index: 3;
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(22,36,58,.10);
+  border-radius: 14px;
+}
 .spacer{ flex:1; }
 
 .btn{
@@ -476,6 +509,7 @@ button, input, select, textarea{ font:inherit; }
   .pillLink{ padding: 8px 10px; }
   .iconBtn{ width:40px; height:40px; border-radius: 12px; }
   .row{ padding: 14px 12px 16px 12px; }
+  .resultActions{ top: 58px; }
   .cardHead{ padding: 16px 12px 0 12px; }
   .cardBody{ padding: 0 12px 2px 12px; }
   .form{ padding: 0 12px 16px 12px; }
