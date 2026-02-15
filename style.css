@@ -268,6 +268,9 @@ button, input, select, textarea{ font:inherit; }
 .cardHead{
   padding: 18px 18px 0 18px;
 }
+.cardBody{
+  padding: 0 18px 4px 18px;
+}
 .h2{
   margin: 0 0 10px 0;
   font-size: 16px;
@@ -281,12 +284,12 @@ button, input, select, textarea{ font:inherit; }
 .grid2{
   display:grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 14px;
 }
 .grid3{
   display:grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
+  gap: 14px;
 }
 @media (max-width: 920px){
   .grid3{ grid-template-columns: 1fr; }
@@ -298,8 +301,8 @@ button, input, select, textarea{ font:inherit; }
 .field{
   display:flex;
   flex-direction:column;
-  gap: 10px;
-  margin: 14px 0 0 0;
+  gap: 12px;
+  margin: 16px 0 0 0;
   min-width:0;
 }
 .label{
@@ -406,6 +409,7 @@ button, input, select, textarea{ font:inherit; }
   .iconBtn{ width:40px; height:40px; border-radius: 12px; }
   .row{ padding: 14px 12px 16px 12px; }
   .cardHead{ padding: 16px 12px 0 12px; }
+  .cardBody{ padding: 0 12px 2px 12px; }
   .form{ padding: 0 12px 16px 12px; }
   .shell{ width: min(var(--max), calc(100% - 24px)); }
   .footer{ width: min(var(--max), calc(100% - 24px)); }
