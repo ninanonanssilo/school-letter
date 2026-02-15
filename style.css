@@ -31,6 +31,13 @@ body{
   background: var(--bg0);
   font-family: "Gowun Dodum", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   letter-spacing:-0.1px;
+  min-height: 100vh;
+  display:flex;
+  flex-direction:column;
+  /* Korean line breaking: prefer breaks at spaces (eojeol) */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-break: strict;
 }
 
 a{ color:inherit; }
@@ -214,10 +221,12 @@ button, input, select, textarea{ font:inherit; }
 
 .shell{
   width: min(var(--max), calc(100% - 32px));
-  margin: 18px auto 72px auto;
+  margin: 18px auto 0 auto;
   display:flex;
   flex-direction:column;
   gap: 18px;
+  flex: 1 0 auto;
+  padding-bottom: 64px; /* keep footer from visually sticking to last card */
 }
 
 .hero{
@@ -383,13 +392,16 @@ button, input, select, textarea{ font:inherit; }
   .cardHead{ padding: 16px 12px 0 12px; }
   .form{ padding: 0 12px 16px 12px; }
   .shell{ width: min(var(--max), calc(100% - 24px)); }
+  .footer{ width: min(var(--max), calc(100% - 24px)); }
 }
 
 .footer{
-  margin-top: 14px;
-  padding: 22px 6px 34px 6px;
+  width: min(var(--max), calc(100% - 32px));
+  margin: 0 auto;
+  padding: 18px 6px 34px 6px;
   color: rgba(22,36,58,.80);
   text-align:left;
+  flex: 0 0 auto;
 }
 .footerTitle{
   font-weight: 700;
