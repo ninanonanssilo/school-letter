@@ -41,6 +41,7 @@ async function callOpenAI({ apiKey, model, template, values }) {
       { role: "user", content: [{ type: "input_text", text: user }] },
     ],
     max_output_tokens: 900,
+    text: { format: { type: "text" } },
   };
 
   const resp = await fetch("https://api.openai.com/v1/responses", {
@@ -58,11 +59,12 @@ async function callOpenAI({ apiKey, model, template, values }) {
   }
 
   const text = extractOutputText(data);
-  return { ok: true, text };
+  return { ok: true, text, raw: data };
 }
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  const url = new URL(request.url);
 
   const apiKey = env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -91,7 +93,21 @@ export async function onRequestPost(context) {
   }
 
   if (!result.text || !result.text.trim()) {
-    return err("OpenAI returned empty text.", 502, { upstream: { ok: true, status: 200 } });
+    const debug = url.searchParams.get("debug") === "1";
+    return err("OpenAI returned empty text.", 502, {
+      upstream: debug
+        ? {
+            ok: true,
+            status: 200,
+            output_text_len:
+              typeof result.raw?.output_text === "string" ? result.raw.output_text.length : null,
+            output_content_types: Array.isArray(result.raw?.output)
+              ? result.raw.output.flatMap((o) => o?.content || []).map((c) => c?.type).filter(Boolean)
+              : [],
+            raw: result.raw,
+          }
+        : { ok: true, status: 200 },
+    });
   }
 
   return json({ ok: true, text: result.text }, { status: 200 });
