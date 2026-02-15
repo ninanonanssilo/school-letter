@@ -1,16 +1,17 @@
 :root{
-  --bg0:#0b1220;
-  --bg1:#0f1a32;
-  --paper:#0f182b;
-  --card:#0f1a2f;
-  --ink:#eaf1ff;
-  --muted:#a9b6d5;
-  --line:rgba(255,255,255,.10);
-  --accent:#ffdf6e;
-  --accent2:#7ee7ff;
-  --danger:#ff6b8f;
-  --ok:#69f0ae;
-  --shadow: 0 18px 70px rgba(0,0,0,.45);
+  --bg0:#f7fbff;
+  --bg1:#fff7ea;
+  --paper:#ffffff;
+  --card:#ffffff;
+  --ink:#16243a;
+  --muted:#5a6b86;
+  --line:rgba(22,36,58,.12);
+  --accent:#ffb703;
+  --accent2:#4cc9f0;
+  --accent3:#80ed99;
+  --danger:#ff4d6d;
+  --ok:#22c55e;
+  --shadow: 0 18px 55px rgba(22,36,58,.12);
   --r12:12px;
   --r16:16px;
   --r20:20px;
@@ -23,9 +24,10 @@ body{
   margin:0;
   color:var(--ink);
   background:
-    radial-gradient(900px 500px at 10% 5%, rgba(255,223,110,.18), transparent 60%),
-    radial-gradient(900px 600px at 80% 0%, rgba(126,231,255,.16), transparent 58%),
-    radial-gradient(900px 700px at 60% 90%, rgba(160,255,179,.10), transparent 55%),
+    radial-gradient(700px 420px at 12% 8%, rgba(255,183,3,.28), transparent 62%),
+    radial-gradient(760px 460px at 86% 6%, rgba(76,201,240,.25), transparent 62%),
+    radial-gradient(820px 520px at 52% 92%, rgba(128,237,153,.20), transparent 62%),
+    repeating-radial-gradient(circle at 20px 18px, rgba(22,36,58,.05) 0 2px, transparent 2px 22px),
     linear-gradient(180deg, var(--bg0), var(--bg1));
   font-family: "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   letter-spacing:-0.1px;
@@ -42,18 +44,32 @@ button, input, select, textarea{ font:inherit; }
   align-items:center;
   gap:14px;
   padding:14px 16px;
-  background: rgba(15, 26, 50, .72);
+  background: rgba(255,255,255,.72);
   border-bottom:1px solid var(--line);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(22,36,58,.08);
 }
 
 .brand{ display:flex; flex-direction:column; line-height:1.05; }
 .brandTitle{
-  font-weight:700;
+  font-weight:900;
   letter-spacing:0.1px;
+  background: linear-gradient(135deg, #0b1b2a, #2653ff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color: transparent;
 }
 .brandSub{ color:var(--muted); font-size:12px; margin-top:4px; }
 .topbarRight{ margin-left:auto; display:flex; gap:10px; align-items:center; }
+
+.topbar::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-1px;
+  height:1px;
+  background: linear-gradient(90deg, rgba(255,183,3,.0), rgba(255,183,3,.55), rgba(76,201,240,.55), rgba(128,237,153,.45), rgba(255,183,3,.0));
+  pointer-events:none;
+}
 
 .pillLink{
   display:inline-flex;
@@ -61,29 +77,29 @@ button, input, select, textarea{ font:inherit; }
   padding:8px 12px;
   border-radius:999px;
   border:1px solid var(--line);
-  background: rgba(255,255,255,.04);
+  background: rgba(255,255,255,.65);
   text-decoration:none;
   color:var(--ink);
 }
-.pillLink:hover{ border-color: rgba(255,255,255,.20); }
+.pillLink:hover{ border-color: rgba(22,36,58,.22); }
 
 .iconBtn{
   width:42px;
   height:42px;
   border-radius:12px;
   border:1px solid var(--line);
-  background: rgba(255,255,255,.04);
+  background: rgba(255,255,255,.65);
   color:var(--ink);
   cursor:pointer;
   display:grid;
   place-items:center;
 }
-.iconBtn:hover{ border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.06); }
+.iconBtn:hover{ border-color: rgba(22,36,58,.22); background: rgba(255,255,255,.90); }
 
 .hamburger{
   width:18px; height:12px; position:relative; display:block;
-  border-top:2px solid rgba(255,255,255,.85);
-  border-bottom:2px solid rgba(255,255,255,.85);
+  border-top:2px solid rgba(22,36,58,.85);
+  border-bottom:2px solid rgba(22,36,58,.85);
 }
 .hamburger::before{
   content:"";
@@ -91,7 +107,7 @@ button, input, select, textarea{ font:inherit; }
   left:0; right:0;
   top:50%;
   transform:translateY(-50%);
-  border-top:2px solid rgba(255,255,255,.85);
+  border-top:2px solid rgba(22,36,58,.85);
 }
 
 .xIcon{
@@ -102,7 +118,7 @@ button, input, select, textarea{ font:inherit; }
   position:absolute;
   left:50%; top:50%;
   width:18px; height:2px;
-  background: rgba(255,255,255,.85);
+  background: rgba(22,36,58,.85);
   transform-origin:center;
 }
 .xIcon::before{ transform:translate(-50%,-50%) rotate(45deg); }
@@ -111,8 +127,8 @@ button, input, select, textarea{ font:inherit; }
 .backdrop{
   position:fixed;
   inset:0;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(4px);
+  background: rgba(22,36,58,.28);
+  backdrop-filter: blur(3px);
   z-index:20;
 }
 
@@ -123,9 +139,10 @@ button, input, select, textarea{ font:inherit; }
   width:min(380px, 88vw);
   z-index:30;
   background:
-    radial-gradient(520px 240px at 30% 0%, rgba(255,223,110,.16), transparent 60%),
-    radial-gradient(520px 300px at 90% 15%, rgba(126,231,255,.14), transparent 60%),
-    linear-gradient(180deg, rgba(12,18,34,.96), rgba(10,16,30,.96));
+    radial-gradient(520px 240px at 30% 0%, rgba(255,183,3,.26), transparent 60%),
+    radial-gradient(520px 300px at 90% 15%, rgba(76,201,240,.20), transparent 60%),
+    radial-gradient(520px 300px at 15% 85%, rgba(128,237,153,.18), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.92));
   border-right:1px solid var(--line);
   box-shadow: var(--shadow);
   padding: 14px;
@@ -143,6 +160,13 @@ button, input, select, textarea{ font:inherit; }
   font-weight:800;
   letter-spacing:0.1px;
 }
+.drawerKicker{
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  margin: 0 2px 10px 2px;
+}
 .drawerNav{
   display:flex;
   flex-direction:column;
@@ -156,11 +180,11 @@ button, input, select, textarea{ font:inherit; }
   padding: 12px 12px;
   border-radius: 14px;
   border:1px solid var(--line);
-  background: rgba(255,255,255,.03);
+  background: rgba(255,255,255,.72);
   text-decoration:none;
 }
-.navItem:hover{ border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.05); }
-.navItem.active{ border-color: rgba(255,223,110,.40); background: rgba(255,223,110,.08); }
+.navItem:hover{ border-color: rgba(22,36,58,.22); background: rgba(255,255,255,.90); }
+.navItem.active{ border-color: rgba(255,183,3,.55); background: rgba(255,183,3,.12); }
 .badge{
   width:28px; height:28px;
   display:grid; place-items:center;
@@ -180,7 +204,7 @@ button, input, select, textarea{ font:inherit; }
 .drawerSectionTitle{
   font-size: 13px;
   margin: 0 0 8px 0;
-  color: rgba(255,255,255,.88);
+  color: rgba(22,36,58,.90);
 }
 .muted{ color: var(--muted); font-size: 13px; margin: 0; }
 
@@ -204,7 +228,7 @@ button, input, select, textarea{ font:inherit; }
 }
 .lead{
   margin: 0;
-  color: rgba(234,241,255,.90);
+  color: rgba(22,36,58,.86);
   max-width: 72ch;
   line-height: 1.55;
 }
@@ -213,9 +237,9 @@ button, input, select, textarea{ font:inherit; }
   margin-top: 14px;
   padding: 12px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(255,107,143,.30);
+  border: 1px solid rgba(255,77,109,.25);
   background: rgba(255,107,143,.08);
-  color: rgba(255,255,255,.92);
+  color: rgba(22,36,58,.92);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -223,8 +247,8 @@ button, input, select, textarea{ font:inherit; }
 .card{
   border:1px solid var(--line);
   border-radius: var(--r20);
-  background: rgba(15, 26, 47, .62);
-  box-shadow: 0 10px 40px rgba(0,0,0,.22);
+  background: rgba(255,255,255,.74);
+  box-shadow: 0 12px 42px rgba(22,36,58,.10);
   overflow:hidden;
 }
 .cardHead{
@@ -265,20 +289,20 @@ button, input, select, textarea{ font:inherit; }
 }
 .label{
   font-size: 12px;
-  color: rgba(234,241,255,.80);
+  color: rgba(22,36,58,.80);
 }
 .input,.select,.textarea{
   width:100%;
   border-radius: 14px;
-  border:1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.18);
+  border:1px solid rgba(22,36,58,.14);
+  background: rgba(255,255,255,.88);
   color: var(--ink);
   padding: 12px 12px;
   outline: none;
 }
 .input:focus,.select:focus,.textarea:focus{
-  border-color: rgba(126,231,255,.50);
-  box-shadow: 0 0 0 3px rgba(126,231,255,.12);
+  border-color: rgba(76,201,240,.65);
+  box-shadow: 0 0 0 3px rgba(76,201,240,.18);
 }
 .textarea{
   resize: vertical;
@@ -296,26 +320,26 @@ button, input, select, textarea{ font:inherit; }
 .spacer{ flex:1; }
 
 .btn{
-  border:1px solid rgba(255,255,255,.16);
-  background: rgba(255,255,255,.04);
+  border:1px solid rgba(22,36,58,.16);
+  background: rgba(255,255,255,.75);
   color: var(--ink);
   border-radius: 999px;
   padding: 10px 14px;
   cursor:pointer;
   font-weight: 600;
 }
-.btn:hover{ border-color: rgba(255,255,255,.24); background: rgba(255,255,255,.06); }
+.btn:hover{ border-color: rgba(22,36,58,.24); background: rgba(255,255,255,.92); }
 .btn:disabled{ opacity: .45; cursor:not-allowed; }
 .btn.primary{
-  border-color: rgba(255,223,110,.45);
-  background: linear-gradient(135deg, rgba(255,223,110,.24), rgba(126,231,255,.14));
+  border-color: rgba(255,183,3,.50);
+  background: linear-gradient(135deg, rgba(255,183,3,.55), rgba(76,201,240,.40), rgba(128,237,153,.35));
 }
 .btn.ghost{
   background: transparent;
 }
 .btn.subtle{
-  border-color: rgba(255,255,255,.10);
-  color: rgba(234,241,255,.88);
+  border-color: rgba(22,36,58,.10);
+  color: rgba(22,36,58,.88);
 }
 
 .status{
@@ -328,9 +352,10 @@ button, input, select, textarea{ font:inherit; }
   padding: 16px;
   border-top: 1px solid var(--line);
   background:
-    radial-gradient(520px 200px at 0% 0%, rgba(255,223,110,.08), transparent 60%),
-    radial-gradient(520px 240px at 100% 0%, rgba(126,231,255,.07), transparent 60%),
-    rgba(0,0,0,.18);
+    radial-gradient(520px 220px at 0% 0%, rgba(255,183,3,.18), transparent 60%),
+    radial-gradient(520px 260px at 100% 0%, rgba(76,201,240,.14), transparent 60%),
+    repeating-linear-gradient(180deg, rgba(22,36,58,.04) 0 1px, transparent 1px 26px),
+    rgba(255,255,255,.92);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-size: 13px;
   line-height: 1.6;
@@ -342,7 +367,7 @@ button, input, select, textarea{ font:inherit; }
 .footer{
   margin-top: 8px;
   padding: 22px 6px 0 6px;
-  color: rgba(234,241,255,.80);
+  color: rgba(22,36,58,.80);
   text-align:left;
 }
 .footerTitle{
@@ -352,5 +377,5 @@ button, input, select, textarea{ font:inherit; }
 .footerSub{
   margin-top: 8px;
   font-size: 12px;
-  color: rgba(169,182,213,.88);
+  color: rgba(90,107,134,.88);
 }
