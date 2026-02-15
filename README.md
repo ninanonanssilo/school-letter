@@ -10,6 +10,7 @@ AI(양식 분석/양식 기반 생성) - Cloudflare Pages Functions
 - 엔드포인트
   - `POST /api/analyze-template` (multipart/form-data, field `file`)
   - `POST /api/generate` (JSON: `{ template, values }`)
+  - `GET /api/health` (`?ping=1`이면 OpenAI에 실제 호출하여 키 동작 확인)
 - 파일 형식
   - 지원: `PDF`, `HWPX(.hwpx)`, 이미지(`png/jpg/jpeg/webp`)
   - 미지원: `HWP(.hwp)` (PDF 또는 HWPX로 변환 후 업로드)
