@@ -144,12 +144,20 @@ async function callOpenAI({ apiKey, model, prompt, file, extractedText, debug = 
     const fileBytes = await file.arrayBuffer();
     const mime = file.type || mimeFromName(file.name);
     const b64 = base64FromArrayBuffer(fileBytes);
-    content.push({
-      type: "input_file",
-      filename: file.name || "template",
-      // Responses API expects a data URL for base64 bytes (see OpenAI docs for PDF file inputs).
-      file_data: `data:${mime};base64,${b64}`,
-    });
+    if (mime.startsWith("image/")) {
+      // For images, use the vision input shape.
+      content.push({
+        type: "input_image",
+        image_url: `data:${mime};base64,${b64}`,
+      });
+    } else {
+      content.push({
+        type: "input_file",
+        filename: file.name || "template",
+        // Responses API expects a data URL for base64 bytes (see OpenAI docs for PDF file inputs).
+        file_data: `data:${mime};base64,${b64}`,
+      });
+    }
   }
 
   const body = {
