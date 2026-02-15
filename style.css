@@ -201,9 +201,13 @@ button, input, select, textarea{ font:inherit; }
   display:grid; place-items:center;
   border-radius:10px;
   font-weight:800;
-  color: #0b1220;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: rgba(22,36,58,.92);
+  border: 1px solid rgba(22,36,58,.14);
+  background: #e8f1ff;
 }
+.badge.is-h{ background: #ffe6a7; } /* pastel yellow */
+.badge.is-p{ background: #cfefff; } /* pastel sky */
+.badge.is-d{ background: #d9f9e3; } /* pastel mint */
 .navText{ font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .ext{ margin-left:auto; color: var(--muted); font-size: 12px; }
 
