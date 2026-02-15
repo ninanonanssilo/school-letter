@@ -62,7 +62,7 @@ function greetingForTone(tone) {
 
 function closingForTone(tone, dateKor, school, teacher) {
   const org = (school || "").trim();
-  const person = (teacher || "").trim();
+  const person = (teacher || "").trim(); // now used as department (부서)
   const tailLine = org ? `${org}` : "학교";
 
   if (tone === "간결") {
@@ -466,7 +466,7 @@ function downloadOutput() {
 function fillExample() {
   $("#school").value = "예시초등학교";
   $("#class").value = "3학년 2반";
-  $("#teacher").value = "OOO";
+  $("#teacher").value = "교무실";
   $("#tone").value = "공손";
   $("#kind").value = "안내";
   $("#title").value = "학부모 상담주간 운영 안내";
