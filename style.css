@@ -29,7 +29,7 @@ body{
     radial-gradient(820px 520px at 52% 92%, rgba(128,237,153,.20), transparent 62%),
     repeating-radial-gradient(circle at 20px 18px, rgba(22,36,58,.05) 0 2px, transparent 2px 22px),
     linear-gradient(180deg, var(--bg0), var(--bg1));
-  font-family: "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: "Gowun Dodum", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   letter-spacing:-0.1px;
 }
 
@@ -50,7 +50,7 @@ button, input, select, textarea{ font:inherit; }
   box-shadow: 0 10px 30px rgba(22,36,58,.08);
 }
 
-.brand{ display:flex; flex-direction:column; line-height:1.05; }
+.brand{ display:flex; flex-direction:column; line-height:1.05; min-width:0; }
 .brandTitle{
   font-weight:900;
   letter-spacing:0.1px;
@@ -58,6 +58,9 @@ button, input, select, textarea{ font:inherit; }
   -webkit-background-clip:text;
   background-clip:text;
   color: transparent;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 .brandSub{ color:var(--muted); font-size:12px; margin-top:4px; }
 .topbarRight{ margin-left:auto; display:flex; gap:10px; align-items:center; }
@@ -159,6 +162,10 @@ button, input, select, textarea{ font:inherit; }
 .drawerTitle{
   font-weight:800;
   letter-spacing:0.1px;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 .drawerKicker{
   font-size: 12px;
@@ -182,6 +189,7 @@ button, input, select, textarea{ font:inherit; }
   border:1px solid var(--line);
   background: rgba(255,255,255,.72);
   text-decoration:none;
+  min-width:0;
 }
 .navItem:hover{ border-color: rgba(22,36,58,.22); background: rgba(255,255,255,.90); }
 .navItem.active{ border-color: rgba(255,183,3,.55); background: rgba(255,183,3,.12); }
@@ -193,7 +201,7 @@ button, input, select, textarea{ font:inherit; }
   color: #0b1220;
   background: linear-gradient(135deg, var(--accent), var(--accent2));
 }
-.navText{ font-weight:600; }
+.navText{ font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .ext{ margin-left:auto; color: var(--muted); font-size: 12px; }
 
 .drawerSection{
@@ -225,6 +233,7 @@ button, input, select, textarea{ font:inherit; }
   font-size: clamp(28px, 3.1vw, 44px);
   margin: 0 0 10px 0;
   letter-spacing: -0.4px;
+  line-height: 1.15;
 }
 .lead{
   margin: 0;
@@ -286,10 +295,12 @@ button, input, select, textarea{ font:inherit; }
   flex-direction:column;
   gap: 8px;
   margin: 12px 0 0 0;
+  min-width:0;
 }
 .label{
   font-size: 12px;
   color: rgba(22,36,58,.80);
+  line-height: 1.25;
 }
 .input,.select,.textarea{
   width:100%;
@@ -299,6 +310,7 @@ button, input, select, textarea{ font:inherit; }
   color: var(--ink);
   padding: 12px 12px;
   outline: none;
+  min-width:0;
 }
 .input:focus,.select:focus,.textarea:focus{
   border-color: rgba(76,201,240,.65);
@@ -327,6 +339,7 @@ button, input, select, textarea{ font:inherit; }
   padding: 10px 14px;
   cursor:pointer;
   font-weight: 600;
+  max-width: 100%;
 }
 .btn:hover{ border-color: rgba(22,36,58,.24); background: rgba(255,255,255,.92); }
 .btn:disabled{ opacity: .45; cursor:not-allowed; }
@@ -362,6 +375,18 @@ button, input, select, textarea{ font:inherit; }
   white-space: pre-wrap;
   word-break: break-word;
   min-height: 140px;
+}
+
+@media (max-width: 520px){
+  .topbar{ gap:10px; padding: 12px 12px; }
+  .topbarRight{ gap:8px; }
+  .brandSub{ display:none; }
+  .pillLink{ padding: 8px 10px; }
+  .iconBtn{ width:40px; height:40px; border-radius: 12px; }
+  .row{ padding: 12px 12px 14px 12px; }
+  .cardHead{ padding: 14px 12px 0 12px; }
+  .form{ padding: 0 12px 14px 12px; }
+  .shell{ width: min(var(--max), calc(100% - 24px)); }
 }
 
 .footer{
